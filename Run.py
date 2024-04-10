@@ -1116,8 +1116,8 @@ def step4_non_ela(temp):
                 X = df_scaled.iloc[:, :-1]
                 y = df_scaled.iloc[:, -1]
 
-                print(X)
-                print(y)
+                # print(X)
+                # print(y)
 
                 gkf = None
                 if prob == 'BBOB':
