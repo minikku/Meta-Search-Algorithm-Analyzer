@@ -2,6 +2,18 @@
 
 This project provides a Python-based analysis tool tailored for optimizing algorithm performance across both continuous and discrete problem domains, utilizing the Nevergrad optimization framework and exploratory landscape analysis (ELA). It specifically targets the Black-Box Optimization Benchmarking (BBOB) and Pseudo-Boolean Optimization (PBO) suites, which are crucial for evaluating the proficiency of optimization algorithms. BBOB assesses algorithms on continuous optimization problems through a diverse set of functions, highlighting challenges in robustness, efficiency, and scalability across varied problem landscapes. Conversely, PBO focuses on discrete optimization, examining how algorithms navigate complex binary vectors, thereby offering a comprehensive view of algorithmic behavior and performance across a spectrum of combinatorial structures and difficulties. The core mission of this project is to enhance the development and refinement of optimization algorithms, ensuring adeptness in tackling an extensive array of optimization challenges within these well-established benchmarking frameworks.
 
+## Key Features
+
+- **Nevergrad Integration:** Seamlessly works with Nevergrad, allowing access to a vast array of optimization algorithms suited for various tasks.
+- **BBOB and PBO Support:** Includes dedicated support for the renowned BBOB and PBO benchmark suites, enabling thorough evaluation of algorithmic performance across a wide range of problem types.
+- **Customizable Algorithms:** Users can easily configure the suite to include both Nevergrad's built-in algorithms and any custom optimizers, placing them in the 'Algorithms' directory for immediate use.
+- **Exploratory Landscape Analysis:** Utilizes ELA to delve into the intricacies of problem landscapes, aiding in the strategic selection and development of optimization algorithms.
+- **Flexible Experimentation:** Offers an array of customization options, from algorithm selection to problem dimensionality, ensuring that researchers can tailor their experiments to meet specific research objectives.
+- **User-Centric Documentation:** Comes with detailed documentation, including setup instructions and usage guidelines, ensuring a smooth start and ongoing ease of use for both new and experienced users.
+- **Analytical Tools for Evaluation:** Beyond optimization tasks, the framework includes tools for data preprocessing, feature computation, and performance evaluation, providing a full spectrum of research capabilities.
+- **Visualization and Analysis:** Recommends methods for result analysis and includes visualization tools, aiding in the clear presentation and interpretation of experimental outcomes.
+- **Community Contributions:** Encourages users to contribute by adding new algorithms, and problem definitions, or enhancing existing features, fostering a collaborative and ever-evolving project environment.
+    
 ## Installation
 
 ### Requirements
