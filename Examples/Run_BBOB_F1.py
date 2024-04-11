@@ -191,7 +191,7 @@ def step2(temp):
                                 # print(base_folder, end='\t')
                                 base_entries = os.listdir(base_folder)
                                 sub_entry = os.listdir(base_folder + '/' + base_entries[0])
-                                print(sub_entry[0])
+                                # print(sub_entry[0])
                                 # print(base_entries[1])
 
                                 # CSV file to which the data is written
