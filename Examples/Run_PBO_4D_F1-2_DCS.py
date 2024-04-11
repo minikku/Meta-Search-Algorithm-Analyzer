@@ -1239,8 +1239,8 @@ def step4_non_ela(temp):
                     # y_pred_0 = pd.DataFrame(y_pred_x).sort_values(by=['current_best'], ascending=False)
                     # y_pred_vis = y_pred_0.reset_index(drop=True)
 
-                    y_pred_vis = y_pred
-                    y_test_vis = y_test
+                    y_pred_vis = pd.DataFrame(y_pred, columns=['target'])
+                    y_test_vis = pd.DataFrame(y_test).reset_index(drop=True)
 
                     # print(y_pred_vis)
 
@@ -1256,7 +1256,7 @@ def step4_non_ela(temp):
                     axs[i].set_xlabel('Sample Index')  # Corrected
                     axs[i].set_ylabel('Value')  # Corrected
                     axs[i].legend()
-                    axs[i].set_yscale('log')
+                    # axs[i].set_yscale('log')
                     # axs[i].set_ylim(bottom=lb, top=ub)
 
                     # Collect data for aggregated visualization
@@ -1267,8 +1267,8 @@ def step4_non_ela(temp):
                                 'dim_size': dim,
                                 'func_id': groups[test_index[0]],
                                 'iteration': ind + 1,
-                                'actual_val': y_test_vis['current_best'][ind],
-                                'predicted_val': y_pred_vis['current_best'][ind]
+                                'actual_val': y_test_vis['target'][ind],
+                                'predicted_val': y_pred_vis['target'][ind]
                             })
 
                 plt.tight_layout()
@@ -1303,7 +1303,7 @@ def step4_non_ela(temp):
         plt.xlabel('Iteration')
         plt.legend(title='', bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.tight_layout()
-        plt.yscale('log')
+        # plt.yscale('log')
 
         plt.show()
 
@@ -1389,35 +1389,31 @@ if __name__ == '__main__':
     freeze_support()
 
     # ALGORITHMS
-    ng_algs = ['PSO', 'DCS']  # ['CMA', 'DE', 'PSO', 'DCS']
+    ng_algs = ['DCS']
 
     # FUNCTIONS
-    # fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]  # BBOB
-    fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]  # PBO
+    fids = [1, 2]
 
     # INSTANCES
-    # iids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    iids = [1, 2, 3, 4, 5]
+    iids = [1]
 
     # DIMENSIONS
-    # dims = [2, 5, 10]  # [2, 5, 20, 40]  # BBOB
-    dims = [16]  # [16, 64, 100, 625]  # PBO
+    dims = [4]
 
     # BUDGETS FOR EACH DIMENSION
-    # bfacs = [10000]  # BBOB
-    bfacs = [1000]  # PBO
+    bfacs = [1000]
 
     # PARALLEL WORKERS
-    pool_size = 26
+    pool_size = 6
 
     # RE-RUN THE EXPERIMENT
     force_replace_old_results = False
 
     # PER ALGORITHM / FUNCTION
-    repetition = 5
+    repetition = 1
 
     # PROBLEM TYPE: BBOB, PBO
-    problem_type = ['PBO']  # ['BBOB', 'PBO']
+    problem_type = ['PBO']
 
     # Execute all procedures
     runPipeline(ng_algs, fids, iids, dims, bfacs, force_replace_old_results, repetition, problem_type)

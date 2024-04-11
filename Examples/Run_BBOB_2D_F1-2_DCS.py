@@ -78,36 +78,36 @@ class AlgorithmEvaluator:
         self.alg = optimizer
         self.bfac = bfac
         self.problem_type = _problem
+        self.custom_algorithm = ['DCS']  # Add your custom algorithms
 
     def __call__(self, func, seed):
         np.random.seed(int(seed))
         warnings.simplefilter("ignore", cma.evolution_strategy.InjectionWarning)
 
+        lb = func.bounds.lb[0]
+        ub = func.bounds.ub[0]
+
+        parametrization = None
         if self.problem_type == 'BBOB':
-            lb = func.bounds.lb[0]
-            ub = func.bounds.ub[0]
 
             parametrization = ng.p.Array(shape=(func.meta_data.n_variables,)).set_bounds(lb, ub)
-            optimizer = eval(f"{self.alg}")(parametrization=parametrization, problem_dim=func.meta_data.n_variables,
-                                            problem_bounds=list([lb, ub]),
-                                            optimization_type=func.meta_data.optimization_type.name,
-                                            budget=int(self.bfac * func.meta_data.n_variables))
-            optimizer.minimize(func)
 
         elif self.problem_type == 'PBO':
-            lb = func.bounds.lb[0]
-            ub = func.bounds.ub[0]
 
             # parametrization = ng.p.Array(shape=(func.meta_data.n_variables,)).set_bounds(lb, ub)  # Continuous
             parametrization = ng.p.TransitionChoice(range(lb, ub + 1), repetitions=func.meta_data.n_variables)  # Discrete
             # parametrization = ng.p.Choice(list(range(lb, ub + 1)), repetitions=func.meta_data.n_variables)  # Discrete
-            # parametrization.function = func
+
+        if self.alg in self.custom_algorithm:
             optimizer = eval(f"{self.alg}")(parametrization=parametrization, problem_dim=func.meta_data.n_variables,
                                             problem_bounds=list([lb, ub]),
                                             optimization_type=func.meta_data.optimization_type.name,
                                             budget=int(self.bfac * func.meta_data.n_variables))
-            optimizer.minimize(func)
-            # optimizer.provide_recommendation()
+        else:
+            optimizer = eval(f"{self.alg}")(parametrization=parametrization,
+                                            budget=int(self.bfac * func.meta_data.n_variables))
+        optimizer.minimize(func)
+        # optimizer.provide_recommendation()
 
 
 # Function to run the optimizer
@@ -190,9 +190,16 @@ def step2(temp):
                             else:
                                 # print(base_folder, end='\t')
                                 base_entries = os.listdir(base_folder)
-                                sub_entry = os.listdir(base_folder + '/' + base_entries[0])
-                                # print(sub_entry[0])
-                                # print(base_entries[1])
+                                # print(base_entries)
+
+                                sub_entry = base_folder + '/' + base_entries[0]
+                                base_entries_index = 0
+                                target_file_a = base_folder + '/' + base_entries[1]
+                                if os.path.isfile(sub_entry):
+                                    sub_entry = base_folder + '/' + base_entries[1]
+                                    base_entries_index = 1
+                                    target_file_a = base_folder + '/' + base_entries[0]
+                                # print(sub_entry)
 
                                 # CSV file to which the data is written
                                 output_file = './CSV/' + _problem + '/' + _algo + '_' + str(_dim) + 'D_F' + str(
@@ -213,15 +220,19 @@ def step2(temp):
 
                                     run_itr = 0
 
-                                    with open(base_folder + '/' + base_entries[1], 'r') as json_file:
+                                    with open(target_file_a, 'r') as json_file:
                                         # Read json summary file
                                         json_data = json.load(json_file)
                                         # print(json_data)
 
                                         # Iterate over each file in the file list
                                         # Open the current raw data file for reading
-                                        with open(base_folder + '/' + base_entries[0] + '/' + sub_entry[0],
-                                                  'r') as file:
+
+                                        dir_scan_b = os.listdir(sub_entry)
+                                        target_file_b = sub_entry + '/' + dir_scan_b[0]
+                                        # print(target_file_b)
+
+                                        with open(target_file_b, 'r') as file:
                                             # Read the file line by line
                                             for line in file:
                                                 # Assuming each line in the raw data file is comma-separated
@@ -741,7 +752,6 @@ def step4_ela(temp):
         # Defining parameters
         agg_algorithms = algo_list
         iteration_limit = 2000
-        how_many_func = 0
         agg_data = []
 
         for algo in algo_list:
@@ -750,7 +760,6 @@ def step4_ela(temp):
                 all_files = []
 
                 for func in func_list:
-                    how_many_func = how_many_func + 1
 
                     file_path = './ELA/' + prob + '/' + algo + '_' + str(dim) + 'D_F' + str(func) + '_ela.csv'
                     # print(file_path)
@@ -815,11 +824,7 @@ def step4_ela(temp):
                 # X = df.to_numpy()
                 X = df
 
-                gkf = None
-                if prob == 'BBOB':
-                    gkf = GroupKFold(n_splits=24)
-                elif prob == 'PBO':
-                    gkf = GroupKFold(n_splits=25)
+                gkf = GroupKFold(n_splits=len(fids))
 
                 # print(X.shape, y.shape, groups.shape)
 
@@ -887,7 +892,7 @@ def step4_ela(temp):
 
                 # ----------------------- TEST META-MODEL -----------------------
 
-                fig, axs = plt.subplots(24, figsize=(10, 60))  # Adjust the size as needed
+                fig, axs = plt.subplots(len(fids), figsize=(10, 60))  # Adjust the size as needed
 
                 # Set options to display a full DataFrame
                 pd.set_option('display.max_rows', None)  # No limit on the number of rows displayed
@@ -992,7 +997,7 @@ def step4_ela(temp):
                      markers=False, errorbar=None, estimator='mean')
 
         plt.title(
-            f'{how_many_func} functions aggregated view: Actual vs Predicted values over iterations for all comparators')
+            f'{len(fids)} functions aggregated view: Actual vs Predicted values over iterations for all comparators')
         plt.ylabel('Values')
         plt.xlabel('Iteration')
         plt.legend(title='', bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -1058,7 +1063,6 @@ def step4_non_ela(temp):
         # Defining parameters
         agg_algorithms = algo_list
         iteration_limit = 2000
-        how_many_func = 0
         agg_data = []
 
         for algo in algo_list:
@@ -1067,7 +1071,6 @@ def step4_non_ela(temp):
                 all_files = []
 
                 for func in func_list:
-                    how_many_func = how_many_func + 1
 
                     file_path = './NON_ELA/' + prob + '/' + algo + '_' + str(dim) + 'D_F' + str(func) + '_non_ela.csv'
                     # print(file_path)
@@ -1119,11 +1122,7 @@ def step4_non_ela(temp):
                 # print(X)
                 # print(y)
 
-                gkf = None
-                if prob == 'BBOB':
-                    gkf = GroupKFold(n_splits=24)
-                elif prob == 'PBO':
-                    gkf = GroupKFold(n_splits=25)
+                gkf = GroupKFold(n_splits=len(fids))
 
                 # print(X.shape, y.shape, groups.shape)
 
@@ -1191,7 +1190,7 @@ def step4_non_ela(temp):
 
                 # ----------------------- TEST META-MODEL -----------------------
 
-                fig, axs = plt.subplots(24, figsize=(10, 60))  # Adjust the size as needed
+                fig, axs = plt.subplots(len(fids), figsize=(10, 60))  # Adjust the size as needed
 
                 # Set options to display a full DataFrame
                 pd.set_option('display.max_rows', None)  # No limit on the number of rows displayed
@@ -1299,7 +1298,7 @@ def step4_non_ela(temp):
                      markers=False, errorbar=None, estimator='mean')
 
         plt.title(
-            f'{how_many_func} functions aggregated view: Actual vs Predicted values over iterations for all comparators')
+            f'{len(fids)} functions aggregated view: Actual vs Predicted values over iterations for all comparators')
         plt.ylabel('Values')
         plt.xlabel('Iteration')
         plt.legend(title='', bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -1393,7 +1392,7 @@ if __name__ == '__main__':
     ng_algs = ['DCS']
 
     # FUNCTIONS
-    fids = [1]
+    fids = [1, 2]
 
     # INSTANCES
     iids = [1]
@@ -1411,7 +1410,7 @@ if __name__ == '__main__':
     force_replace_old_results = False
 
     # PER ALGORITHM / FUNCTION
-    repetition = 5
+    repetition = 1
 
     # PROBLEM TYPE: BBOB, PBO
     problem_type = ['BBOB']
