@@ -128,11 +128,12 @@ def compute_ela(X, y, min_y, max_y, lower_bound, upper_bound):
 ## Contributors ✨
 
 This project exists thanks to all the people who contribute.
+- **Poomin Duankhan** - *College of Computing, Khon Kaen University, Thailand*
+- **Diederick Vermetten** - *Leiden Institute of Advanced Computer Science, Leiden University, Netherlands*
 - **Thomas Bäck** - *Leiden Institute of Advanced Computer Science, Leiden University, Netherlands*
 - **Jan van Rijn** - *Leiden Institute of Advanced Computer Science, Leiden University, Netherlands*
-- **Diederick Vermetten** - *Leiden Institute of Advanced Computer Science, Leiden University, Netherlands*
 - **Khamron Sunat** - *College of Computing, Khon Kaen University, Thailand*
-- **Poomin Duankhan** - *College of Computing, Khon Kaen University, Thailand*
+
 
 ## License
 Copyright (c) 2024 Poomin
