@@ -20,10 +20,9 @@ This project provides a Python-based analysis tool tailored for optimizing algor
 
 ### Requirements
 
-[![Python](https://skillicons.dev/icons?i=python)](https://www.python.org/)
-
 - Python 3.9 or higher
 - pip (Python package installer) 
+- scikit-learn 1.4.2 or higher
 
 ### Setting Up a Virtual Environment
 
@@ -49,43 +48,50 @@ pip install -r requirements.txt
 
 ## Usage
 
-After installing the required packages, you can run the code by executing:
+After installing the required packages, you can run the example code by executing:
 ```bash
-python Run.py
+python -m examples.run_BBOB_2D_F1-2_DCS
 ```
 This command will initiate the optimization process, analyzing algorithms' performance across specified problem domains. You can customize the settings below according to your needs.
 ```bash
-# ---------------------- Main execution block ---------------------------
+# ALGORITHMS
+ng_algs = ['DCS']
 
-# ALGORITHMS - List of algorithms to test. Can be customized as needed.
-ng_algs = ['DCS']  # Compatible with Nevergrad's built-in and custom optimizers (place in the 'Algorithms' directory).
-
-# FUNCTIONS - List of function IDs to evaluate. Adjust according to the benchmark suite.
-# fids for BBOB might include [1, 2, 3, ..., 24]. Here, using PBO as an example.
+# FUNCTIONS
 fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
 
-# INSTANCES - Which instances of each function to run. Customize as per requirement.
+# INSTANCES
 iids = [1, 2, 3, 4, 5]
 
-# DIMENSIONS - Dimensions of the problem to be tested. Varies by problem type.
-dims = [16]  # Example for PBO. For BBOB, might include [2, 5, 10, 20, 40].
+# DIMENSIONS
+dims = [16]
 
-# BUDGETS FOR EACH DIMENSION - Number of function evaluations. Adjust based on computational resources.
-bfacs = [1000]  # Example for PBO. For BBOB, might be higher, e.g., [10000].
+# BUDGETS FOR EACH DIMENSION
+bfacs = [1000]
 
-# PARALLEL WORKERS - Number of parallel processes to use. Depends on the machine's capability.
-pool_size = 26
+# PARALLEL WORKERS
+pool_size = 6
 
-# RE-RUN THE EXPERIMENT - Set to True to force rerun experiments even if results exist.
+# RE-RUN THE EXPERIMENT
 force_replace_old_results = False
 
-# PER ALGORITHM / FUNCTION - Number of repetitions for each algorithm/function combination.
+# PER ALGORITHM / FUNCTION
 repetition = 5
 
-# PROBLEM TYPE - Indicates the benchmark suite to use. ['BBOB', 'PBO'] are options.
-problem_type = ['PBO']  # Can be set to ['BBOB', 'PBO'] to run both suites.
+# PROBLEM TYPES
+problem_type = ['PBO']  # 
 ```
+- **`ng_algs`**: List of algorithms to test. Can be customized as needed. Compatible with Nevergrad's built-in and custom optimizers (place in the 'Algorithms' directory).
+- **`fids`**: List of function IDs to evaluate. Adjust according to the benchmark suite. For BBOB might include [1, 2, 3, ..., 24]. Here, using PBO as an example.
+- **`iids`**: Which instances of each function to run. Customize as per requirement.
+- **`dims`**: Dimensions of the problem to be tested. Varies by problem type. For PBO might include [4, 16, 100, 625]. For BBOB, might include [2, 5, 10, 20, 40].
+- **`bfacs`**: Number of function evaluations. Adjust based on computational resources.
+- **`pool_size`**: Number of parallel processes to use. Depends on the machine's capability.
+- **`force_replace_old_results`**: Set to True to force rerun experiments even if results exist.
+- **`repetition`**: Number of repetitions for each algorithm/function combination.
+- **`problem_type`**: Indicates the benchmark suite to use. Can be set to ['BBOB', 'PBO'] to run both suites.
 
+<!--
 ## Main Components
 Function **`run_parallel_function`** is responsible for executing tasks in parallel.
 ```bash
@@ -126,6 +132,7 @@ def compute_ela(X, y, min_y, max_y, lower_bound, upper_bound):
     :param upper_bound: Upper bound of the input space.
     """
 ```
+-->
 
 ## Contributors ✨
 
