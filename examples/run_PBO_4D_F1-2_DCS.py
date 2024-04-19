@@ -1,6 +1,5 @@
 from msaa.core.pipeline import run_pipeline
 from multiprocessing import freeze_support
-from msaa.algorithms.DCS import DCS
 
 if __name__ == '__main__':
     freeze_support()
