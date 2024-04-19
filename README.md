@@ -1,4 +1,6 @@
-# Meta-Search Algorithm Analyzer
+# Meta-Search Algorithm Analyzer (MSAA)
+
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 This project provides a Python-based analysis tool tailored for optimizing algorithm performance across both continuous and discrete problem domains, utilizing the Nevergrad optimization framework and exploratory landscape analysis (ELA). It specifically targets the Black-Box Optimization Benchmarking (BBOB) and Pseudo-Boolean Optimization (PBO) suites, which are crucial for evaluating the proficiency of optimization algorithms. BBOB assesses algorithms on continuous optimization problems through a diverse set of functions, highlighting challenges in robustness, efficiency, and scalability across varied problem landscapes. Conversely, PBO focuses on discrete optimization, examining how algorithms navigate complex binary vectors, thereby offering a comprehensive view of algorithmic behavior and performance across a spectrum of combinatorial structures and difficulties. The core mission of this project is to enhance the development and refinement of optimization algorithms, ensuring adeptness in tackling an extensive array of optimization challenges within these well-established benchmarking frameworks.
 
