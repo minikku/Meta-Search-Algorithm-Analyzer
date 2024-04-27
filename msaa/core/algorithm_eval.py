@@ -39,11 +39,13 @@ class AlgorithmEvaluator:
 
         lb = func.bounds.lb[0]
         ub = func.bounds.ub[0]
+        max_budget = None
 
         parametrization = None
         if self.problem_type == 'BBOB':
 
             parametrization = ng.p.Array(shape=(func.meta_data.n_variables,)).set_bounds(lb, ub)
+            max_budget = self.bfac * func.meta_data.n_variables
 
         elif self.problem_type == 'PBO':
 
@@ -51,15 +53,16 @@ class AlgorithmEvaluator:
             parametrization = ng.p.TransitionChoice(range(lb, ub + 1),
                                                     repetitions=func.meta_data.n_variables)  # Discrete
             # parametrization = ng.p.Choice(list(range(lb, ub + 1)), repetitions=func.meta_data.n_variables)  # Discrete
+            max_budget = self.bfac
 
         if self.alg in self.custom_algorithm:
             optimizer = eval(f"{self.alg}")(parametrization=parametrization, problem_dim=func.meta_data.n_variables,
                                             problem_bounds=list([lb, ub]),
                                             optimization_type=func.meta_data.optimization_type.name,
-                                            budget=int(self.bfac * func.meta_data.n_variables))
+                                            budget=int(max_budget))
         else:
             optimizer = eval(f"{self.alg}")(parametrization=parametrization,
-                                            budget=int(self.bfac * func.meta_data.n_variables))
+                                            budget=int(max_budget))
         optimizer.minimize(func)
         # optimizer.provide_recommendation()
 

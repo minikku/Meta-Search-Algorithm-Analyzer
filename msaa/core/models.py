@@ -575,7 +575,7 @@ def step4_non_ela(temp):
                     axs[i].set_xlabel('Sample Index')  # Corrected
                     axs[i].set_ylabel('Value')  # Corrected
                     axs[i].legend()
-                    axs[i].set_yscale('log')
+                    # axs[i].set_yscale('log')
                     # axs[i].set_ylim(bottom=lb, top=ub)
 
                     # Collect data for aggregated visualization
@@ -622,6 +622,6 @@ def step4_non_ela(temp):
         plt.xlabel('Iteration')
         plt.legend(title='', bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.tight_layout()
-        plt.yscale('log')
+        # plt.yscale('log')
 
         plt.show()
