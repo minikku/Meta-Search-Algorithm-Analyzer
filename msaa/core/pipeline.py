@@ -6,8 +6,8 @@ from itertools import product
 from .utilities import show_elapsed_time, show_current_date_time
 from .algorithm_eval import run_optimizer, run_parallel_function
 from .data_processing import step2
-from .feature_computation import step3_ela_feature, step3_non_ela_feature
-from .models import step4_ela, step4_non_ela
+from .feature_computation import step3_ela_feature_minimize, step3_non_ela_feature_minimize, step3_non_ela_feature_maximize
+from .models import step4_ela_minimize, step4_non_ela_minimize, step4_non_ela_maximize
 # from ..algorithms import *
 
 
@@ -49,16 +49,18 @@ def run_pipeline(ng_algs_inp, fids_inp, iids_inp, dims_inp, bfacs_inp, force_rep
 
         start_time = time.time()
         if _problem == 'BBOB':
-            step3_ela_feature(args2)  # Compute ELA features
+            step3_ela_feature_minimize(args2)  # Compute ELA features
+            # step3_non_ela_feature_minimize(args2)  # Prepare Non-ELA features
         elif _problem == 'PBO':
-            step3_non_ela_feature(args2)  # Prepare features
+            step3_non_ela_feature_maximize(args2)  # Prepare Non-ELA features
         show_elapsed_time(start_time)
 
         start_time = time.time()
         if _problem == 'BBOB':
-            step4_ela(args2)  # Build & Test ML meta-models
+            step4_ela_minimize(args2)  # Build & Test ML meta-models
+            # step4_non_ela_minimize(args2)  # Build & Test ML meta-models
         elif _problem == 'PBO':
-            step4_non_ela(args2)  # Build & Test ML meta-models
+            step4_non_ela_maximize(args2)  # Build & Test ML meta-models
         show_elapsed_time(start_time)
 
     print(show_current_date_time() + ' ' + 'COMPLETED')

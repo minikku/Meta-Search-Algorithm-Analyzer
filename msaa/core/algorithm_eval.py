@@ -47,6 +47,9 @@ class AlgorithmEvaluator:
             parametrization = ng.p.Array(shape=(func.meta_data.n_variables,)).set_bounds(lb, ub)
             max_budget = self.bfac * func.meta_data.n_variables
 
+            # if self.alg not in self.custom_algorithm:
+            #     max_budget = max_budget * 100
+
         elif self.problem_type == 'PBO':
 
             # parametrization = ng.p.Array(shape=(func.meta_data.n_variables,)).set_bounds(lb, ub)  # Continuous
