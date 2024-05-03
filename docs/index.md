@@ -79,7 +79,20 @@ force_replace_old_results = False
 repetition = 5
 
 # PROBLEM TYPES
-problem_type = ['PBO']  # 
+problem_type = ['PBO'] 
+
+# ML MODEL OPTIONS
+models = [
+    LinearRegression(),
+    Ridge(),
+    Lasso(),
+    ElasticNet(),
+    KNeighborsRegressor(),
+    DecisionTreeRegressor(),
+    RandomForestRegressor(),
+    GradientBoostingRegressor(),
+    SVR()
+]
 ```
 - **`ng_algs`**: List of algorithms to test. Can be customized as needed. Compatible with Nevergrad's built-in and custom optimizers (place in the 'Algorithms' directory).
 - **`fids`**: List of function IDs to evaluate. Adjust according to the benchmark suite. For BBOB might include [1, 2, 3, ..., 24]. Here, using PBO as an example.
@@ -90,6 +103,7 @@ problem_type = ['PBO']  #
 - **`force_replace_old_results`**: Set to True to force rerun experiments even if results exist.
 - **`repetition`**: Number of repetitions for each algorithm/function combination.
 - **`problem_type`**: Indicates the benchmark suite to use. Can be set to ['BBOB', 'PBO'] to run both suites.
+- **`models`**: Specifies the machine learning model for the regressor to use. It can be set to `['LinearRegression', 'Ridge', 'Lasso', 'ElasticNet', 'KNeighborsRegressor', 'DecisionTreeRegressor', 'RandomForestRegressor', 'GradientBoostingRegressor', 'SVR']` to run all models.
 
 <!--
 ## Main Components

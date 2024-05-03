@@ -9,7 +9,7 @@ import nevergrad as ng
 from .utilities import show_current_date_time
 
 from ..algorithms.DCS import DCS
-from nevergrad.optimization.optimizerlib import CMA, PSO, DE
+from nevergrad.optimization.optimizerlib import CMA, PSO, DE, ES
 
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 warnings.filterwarnings('ignore', category=UserWarning)

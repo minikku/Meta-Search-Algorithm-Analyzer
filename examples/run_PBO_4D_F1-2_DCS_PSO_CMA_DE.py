@@ -1,6 +1,12 @@
 from msaa.core.pipeline import run_pipeline
 from multiprocessing import freeze_support
 
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+
 if __name__ == '__main__':
     freeze_support()
 
@@ -31,5 +37,18 @@ if __name__ == '__main__':
     # PROBLEM TYPE: BBOB, PBO
     problem_type = ['PBO']
 
+    # ML MODEL OPTIONS
+    models = [
+        LinearRegression(),
+        Ridge(),
+        Lasso(),
+        ElasticNet(),
+        KNeighborsRegressor(),
+        DecisionTreeRegressor(),
+        RandomForestRegressor(),
+        GradientBoostingRegressor(),
+        SVR()
+    ]
+
     # Execute all procedures
-    run_pipeline(ng_algs, fids, iids, dims, bfacs, force_replace_old_results, repetition, problem_type, pool_size)
+    run_pipeline(ng_algs, fids, iids, dims, bfacs, force_replace_old_results, repetition, problem_type, pool_size, models)
