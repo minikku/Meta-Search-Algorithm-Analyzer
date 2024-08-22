@@ -3,8 +3,8 @@ import json
 import os
 from .utilities import show_current_date_time
 
-def step2(temp):
-    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type = temp
+def format_raw_result(temp):
+    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type, window_size = temp
 
     ###################### PREPARE CSV FILES ######################
 
