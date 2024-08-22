@@ -3,39 +3,13 @@ import os
 
 import pandas as pd
 import numpy as np
-import pflacco.classical_ela_features as pflacco_ela
-from .utilities import show_current_date_time
 
+from .utilities import show_current_date_time, compute_ela
 
-def compute_ela(X, y, min_y, max_y, lower_bound, upper_bound):
-    # y_rescale = (max(y) - y) / (max(y) - min(y) + 1e-20)
-    y_rescale = (max_y - y) / (max_y - min_y + 1e-30)
-    # y_rescale = (max(y) - y) / (max(y) - min(y) + 1e-30)
-    # y_rescale = y
-    # Calculate ELA_20-2-2024 features
-    ela_meta = pflacco_ela.calculate_ela_meta(X, y_rescale)
-    ela_distr = pflacco_ela.calculate_ela_distribution(X, y_rescale)
-    ela_level = pflacco_ela.calculate_ela_level(X, y_rescale)
-    pca = pflacco_ela.calculate_pca(X, y_rescale)
-    limo = pflacco_ela.calculate_limo(X, y_rescale, lower_bound, upper_bound)
-    nbc = pflacco_ela.calculate_nbc(X, y_rescale)
-    disp = pflacco_ela.calculate_dispersion(X, y_rescale)
-    ic = pflacco_ela.calculate_information_content(X, y_rescale, seed=100)
-    ela_ = {**ela_meta, **ela_distr, **ela_level, **pca, **limo, **nbc, **disp, **ic}
-    df_ela = pd.DataFrame([ela_])
-    return df_ela
-
-
-def step3_ela_feature_minimize(temp):
-    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type = temp
+def ela_feature_minimize(temp):
+    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type, window_size = temp
 
     ###################### PREPARE ELA FEATURE FILES ######################
-
-    # import pandas as pd
-    # import pflacco.classical_ela_features as pflacco_ela
-    #
-    # warnings.filterwarnings('ignore', category=RuntimeWarning)
-    # warnings.filterwarnings('ignore', category=UserWarning)
 
     # CREATE A DIRECTORY
     required_dir = 'ELA'
@@ -152,8 +126,8 @@ def step3_ela_feature_minimize(temp):
                                 # print('extracted', end='\t')
 
                                 begin_ind = 0
-                                end_ind = 99
-                                batch_size = 100
+                                end_ind = window_size-1
+                                batch_size = window_size
 
                                 dataset_instance_count = 0
                                 iteration_done = 0
@@ -269,16 +243,10 @@ def step3_ela_feature_minimize(temp):
     print(show_current_date_time() + ' ' + 'COMPLETED 3/4: ELA features were extracted')
 
 
-def step3_non_ela_feature_minimize(temp):
-    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type = temp
+def non_ela_feature_minimize(temp):
+    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type, window_size = temp
 
     ###################### PREPARE FEATURE FILES ######################
-
-    # import pandas as pd
-    # import pflacco.classical_ela_features as pflacco_ela
-    #
-    # warnings.filterwarnings('ignore', category=RuntimeWarning)
-    # warnings.filterwarnings('ignore', category=UserWarning)
 
     # CREATE A DIRECTORY
     required_dir = 'NON_ELA'
@@ -349,8 +317,8 @@ def step3_non_ela_feature_minimize(temp):
                                 raw_current_input_np_desc = np.sort(raw_current_input_np)[::-1]
 
                                 begin_ind = 0
-                                end_ind = 9
-                                batch_size = 10
+                                end_ind = window_size-1
+                                batch_size = window_size
                                 step_size = 1
 
                                 dataset_instance_count = 0
@@ -444,16 +412,10 @@ def step3_non_ela_feature_minimize(temp):
     print(show_current_date_time() + ' ' + 'COMPLETED 3/4: Features were prepared')
 
 
-def step3_non_ela_feature_maximize(temp):
-    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type = temp
+def non_ela_feature_maximize(temp):
+    ng_algs, fids, iids, dims, bfacs, force_replace_flag, prob_type, window_size = temp
 
     ###################### PREPARE FEATURE FILES ######################
-
-    # import pandas as pd
-    # import pflacco.classical_ela_features as pflacco_ela
-    #
-    # warnings.filterwarnings('ignore', category=RuntimeWarning)
-    # warnings.filterwarnings('ignore', category=UserWarning)
 
     # CREATE A DIRECTORY
     required_dir = 'NON_ELA'
@@ -524,8 +486,8 @@ def step3_non_ela_feature_maximize(temp):
                                 raw_current_input_np_asc = np.sort(raw_current_input_np)
 
                                 begin_ind = 0
-                                end_ind = 99
-                                batch_size = 100
+                                end_ind = window_size-1
+                                batch_size = window_size
                                 step_size = 1
 
                                 dataset_instance_count = 0
