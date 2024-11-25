@@ -125,6 +125,9 @@ def ela_feature_minimize(temp):
 
                                 # print('extracted', end='\t')
 
+                                # Add header text as the first row
+                                add_header_text_flag = True
+
                                 begin_ind = 0
                                 end_ind = window_size-1
                                 batch_size = window_size
@@ -169,7 +172,7 @@ def ela_feature_minimize(temp):
                                         ela_features = compute_ela(x_tmp, y_tmp, min_y, max_y, lb, ub)
                                         # print(ela_features.columns.tolist())
 
-                                        if begin_ind == 0:
+                                        if add_header_text_flag:
                                             # Optional: Write headers to the CSV file
                                             headers = []  # Adjust based on your data structure
                                             headers.append('algo')
@@ -187,6 +190,9 @@ def ela_feature_minimize(temp):
 
                                             # print(headers)
                                             csvwriter.writerow(headers)
+
+                                            # After added header text row
+                                            add_header_text_flag = False
 
                                             # Extract values of features
                                             ela_data = np.array(ela_features.iloc[0, :]).tolist()
@@ -316,6 +322,10 @@ def non_ela_feature_minimize(temp):
                                 raw_current_input_np = np.array(raw_current_input)
                                 raw_current_input_np_desc = np.sort(raw_current_input_np)[::-1]
 
+
+                                # Add header text as the first row
+                                add_header_text_flag = True
+
                                 begin_ind = 0
                                 end_ind = window_size-1
                                 batch_size = window_size
@@ -346,7 +356,7 @@ def non_ela_feature_minimize(temp):
 
                                     try:
 
-                                        if begin_ind == 0:
+                                        if add_header_text_flag:
                                             # Optional: Write headers to the CSV file
                                             headers = []  # Adjust based on your data structure
                                             headers.append('algo')
@@ -362,6 +372,9 @@ def non_ela_feature_minimize(temp):
                                             headers.append('target')
                                             # print(headers)
                                             csvwriter.writerow(headers)
+
+                                            # After added header text row
+                                            add_header_text_flag = False
 
                                             # Extract values of features
                                             data = []
@@ -485,6 +498,9 @@ def non_ela_feature_maximize(temp):
                                 raw_current_input_np = np.array(raw_current_input)
                                 raw_current_input_np_asc = np.sort(raw_current_input_np)
 
+                                # Add header text as the first row
+                                add_header_text_flag = True
+
                                 begin_ind = 0
                                 end_ind = window_size-1
                                 batch_size = window_size
@@ -515,7 +531,7 @@ def non_ela_feature_maximize(temp):
 
                                     try:
 
-                                        if begin_ind == 0:
+                                        if add_header_text_flag:
                                             # Optional: Write headers to the CSV file
                                             headers = []  # Adjust based on your data structure
                                             headers.append('algo')
@@ -531,6 +547,9 @@ def non_ela_feature_maximize(temp):
                                             headers.append('target')
                                             # print(headers)
                                             csvwriter.writerow(headers)
+
+                                            # After added header text row
+                                            add_header_text_flag = False
 
                                             # Extract values of features
                                             data = []

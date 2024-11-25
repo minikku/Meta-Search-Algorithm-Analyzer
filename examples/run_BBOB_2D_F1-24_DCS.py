@@ -7,6 +7,8 @@ import time
 from itertools import product
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import MinMaxScaler
@@ -40,16 +42,16 @@ if __name__ == '__main__':
     ng_algs = ['DCS']
 
     # FUNCTIONS
-    fids = [1, 2]
+    fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ,15, 16, 17, 18, 19, 20, 21 ,22, 23, 24]
 
     # INSTANCES
-    iids = [1]
+    iids = [1,2,3,4,5,6,7,8,9,10]
 
     # DIMENSIONS
-    dims = [4]
+    dims = [2]
 
     # BUDGETS FOR EACH DIMENSION
-    bfacs = [1000]
+    bfacs = [10000]
 
     # PARALLEL WORKERS
     pool_size = 6
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     repetition = 1
 
     # PROBLEM TYPE: BBOB, PBO
-    problem_type = ['PBO']
+    problem_type = ['BBOB']
 
     # ML MODEL OPTIONS
     models = [
@@ -124,6 +126,10 @@ if __name__ == '__main__':
     # Create new directories
     create_new_models_directory(problem_type, models)
 
+    model_names = []
+    for model in models:
+        model_names.append(model.__str__())
+
     prob_list = problem_type
     algo_list = ng_algs
     dim_list = dims
@@ -142,11 +148,11 @@ if __name__ == '__main__':
                 all_files = []
 
                 for func in func_list:
-                    file_path = './NON_ELA/' + prob + '/' + algo + '_' + str(dim) + 'D_F' + str(func) + '_non_ela.csv'
+                    file_path = './ELA/' + prob + '/' + algo + '_' + str(dim) + 'D_F' + str(func) + '_ela.csv'
                     current = pd.read_csv(file_path)
                     all_files.append(current)
 
-                df = pd.concat(all_files)
+                df = pd.concat(all_files, ignore_index=True)
 
                 # ----------------------- PREPROCESS FEATURES -----------------------
 
@@ -156,14 +162,19 @@ if __name__ == '__main__':
                 # Drop columns that contain any NaN values
                 df = df.dropna(axis=1, how='any')
 
+                # Defining a target values
+                # y = df['current_best']
+                y = df['final_best']
+
                 groups = df['func_id'].to_numpy()
 
                 df = df.drop(
-                    ['algo', 'dim', 'func_id', 'ins_id', 'run_id'],
+                    ['algo', 'dim', 'func_id', 'ins_id', 'run_id',
+                     'ic.costs_runtime'],
                     axis=1)
 
                 # Select columns to scale (all except the first one)
-                columns_to_scale = df.columns[0:]
+                columns_to_scale = df.columns[1:]
 
                 scaler = MinMaxScaler()
                 df_scaled = scaler.fit_transform(df[columns_to_scale])
@@ -171,12 +182,15 @@ if __name__ == '__main__':
                 # Create a DataFrame from the scaled data
                 df_scaled = pd.DataFrame(df_scaled, columns=columns_to_scale)
 
-                X = df_scaled.iloc[:, :-1]
-                y = df_scaled.iloc[:, -1]
+                # Concatenate the first column (unchanged) with the scaled DataFrame
+                df_final = pd.concat([df.iloc[:, :1].reset_index(drop=True), df_scaled], axis=1)
+
+                X = df_final
 
                 gkf = GroupKFold(n_splits=len(fids))
 
                 # ----------------------- BUILD META-MODEL -----------------------
+
 
                 # Train on different models
                 for i, (train_index, test_index) in enumerate(gkf.split(X, y, groups)):
@@ -190,6 +204,9 @@ if __name__ == '__main__':
                     predict_vals = []
                     error_vals = []
                     actual_vals = []
+
+                    # Collect errors from predictions
+                    func_error_agg_data = []
 
                     model_idx = 0
                     # Train and predict with each model
@@ -217,29 +234,27 @@ if __name__ == '__main__':
                         meta_model = loaded_model
                         y_pred = meta_model.make_prediction(X_test[selected_input_features])
 
-                        # Data-processing for visualization
-                        y_pred_vis = pd.DataFrame(y_pred, columns=['target'])
-                        y_test_vis = pd.DataFrame(y_test).reset_index(drop=True)
-
-                        predict_vals.append(y_pred_vis)
-                        error_vals.append(root_mean_squared_error(y_test_vis, y_pred_vis))
-                        if len(actual_vals) == 0:
-                            actual_vals.append(y_test_vis)
-
-                        # Collect data for aggregated visualization
-                        error_agg_data[model_idx] += error_vals[model_idx]
-                        model_idx = model_idx + 1
+                        # Calculate SE
+                        squared_errors = (X_test[target_feature] - y_pred) ** 2
+                        func_error_agg_data.append(squared_errors)
 
                     # Plotting
-                    per_function_plot(algo, dim, actual_vals, predict_vals, error_vals, target_func_no,
-                                      models)
+                    plt.figure(figsize=(10, 6))
+                    plt.boxplot(func_error_agg_data)
+                    plt.xticks(ticks=np.arange(1, len(model_names) + 1), labels=model_names, rotation=45, ha='right')
+                    plt.title('Distribution of Squared Errors (F' + str(target_func_no) + ')')
+                    plt.ylabel('Squared Error')
+                    plt.yscale('log')
+                    plt.grid(True)
+                    plt.tight_layout()
+                    plt.show()
 
                 print(
                     show_current_date_time() + ' ' + 'COMPLETED 4/4: Models were trained and tested (' + algo + '_' + str(
                         dim) + 'D)')
 
         # Plotting
-        aggregated_plot(fids, error_agg_data, models)
+        # aggregated_plot(fids, error_agg_data, models)
 
     show_elapsed_time(start_time)
 
