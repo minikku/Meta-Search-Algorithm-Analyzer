@@ -1,5 +1,6 @@
 import os
 import random
+os.environ["OPENBLAS_NUM_THREADS"] = "6"
 
 from multiprocessing import freeze_support
 import warnings
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     bfacs = [10000]
 
     # PARALLEL WORKERS
-    pool_size = 6
+    pool_size = 4
 
     # RE-RUN THE EXPERIMENT
     force_replace_old_results = False
@@ -245,7 +246,7 @@ if __name__ == '__main__':
                         plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ' : ' + model.__str__() + ')')
                         plt.ylabel('Final Best Values')
                         plt.xlabel('Iterations')
-                        plt.yscale('log', base=10)
+                        # plt.yscale('log', base=2)
                         plt.grid(True, linestyle='--', alpha=0.7)
                         # plt.tight_layout()
                         plt.legend()
