@@ -38,7 +38,7 @@ within these well-established benchmarking frameworks.
 
 ### Requirements
 
-- Python 3.9 or higher
+- Python 3.9
 - pip (Python package installer)
 - scikit-learn 1.4.2 or higher
 
