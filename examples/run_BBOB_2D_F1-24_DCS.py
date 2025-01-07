@@ -1,5 +1,8 @@
 import os
 import random
+
+from matplotlib.lines import lineStyles
+
 os.environ["OPENBLAS_NUM_THREADS"] = "6"
 
 from multiprocessing import freeze_support
@@ -46,7 +49,7 @@ if __name__ == '__main__':
     fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ,15, 16, 17, 18, 19, 20, 21 ,22, 23, 24]
 
     # INSTANCES
-    iids = [1,2,3,4,5,6,7,8,9,10]
+    iids = [1]  # [1,2,3,4,5,6,7,8,9,10]
 
     # DIMENSIONS
     dims = [2]
@@ -55,7 +58,7 @@ if __name__ == '__main__':
     bfacs = [10000]
 
     # PARALLEL WORKERS
-    pool_size = 4
+    pool_size = 1
 
     # RE-RUN THE EXPERIMENT
     force_replace_old_results = False
@@ -234,33 +237,52 @@ if __name__ == '__main__':
                         loaded_model = pickle.load(open(filename, 'rb'))
                         meta_model = loaded_model
                         y_pred = meta_model.make_prediction(X_test[selected_input_features])
+                        predict_vals.append(y_pred)
 
                         # Calculate SE
                         squared_errors = (X_test[target_feature] - y_pred) ** 2
                         func_error_agg_data.append(squared_errors)
 
-                        # Plotting
-                        plt.figure(figsize=(10, 6))
-                        plt.scatter(range(len(X_test[target_feature])), X_test[target_feature], label='Actual', s=2)
-                        plt.scatter(range(len(y_pred)), y_pred, label='Predicted', s=2)
-                        plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ' : ' + model.__str__() + ')')
-                        plt.ylabel('Final Best Values')
-                        plt.xlabel('Iterations')
-                        # plt.yscale('log', base=2)
-                        plt.grid(True, linestyle='--', alpha=0.7)
-                        # plt.tight_layout()
-                        plt.legend()
-                        plt.show()
+                        # # Plotting
+                        # plt.figure(figsize=(10, 6))
+                        # plt.scatter(range(len(X_test[target_feature])), X_test[target_feature], label='Actual', s=2)
+                        # plt.scatter(range(len(y_pred)), y_pred, label='Predicted', s=2)
+                        # plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ' : ' + model.__str__() + ')')
+                        # plt.ylabel('Final Best Values')
+                        # plt.xlabel('Iterations')
+                        # # plt.yscale('log', base=2)
+                        # plt.grid(True, linestyle='--', alpha=0.7)
+                        # # plt.tight_layout()
+                        # plt.legend()
+                        # plt.show()
+
+                        model_idx = model_idx + 1
 
                     # Plotting
-                    plt.figure(figsize=(10, 6))
+                    # plt.figure(figsize=(16, 10))
+                    plt.scatter(range(len(X_test[target_feature])), X_test[target_feature], label='Actual', s=2,
+                                marker='*')
+                    for m_idx in range(len(predict_vals)):
+                        plt.scatter(range(len(predict_vals[m_idx])), predict_vals[m_idx], label='Predicted (' + models[m_idx].__str__()[:-2] + ')', s=6, marker='o')
+                    plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ')')
+                    plt.ylabel('Final Best Values')
+                    plt.xlabel('Iterations')
+                    # plt.yscale('log', base=2)
+                    plt.grid(True, linestyle=':', alpha=0.5)
+                    plt.tight_layout()
+                    plt.legend()
+                    # plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+                    plt.show()
+
+                    # Plotting
+                    # plt.figure(figsize=(10, 6))
                     plt.boxplot(func_error_agg_data)
                     plt.xticks(ticks=np.arange(1, len(model_names) + 1), labels=model_names, rotation=45, ha='right')
                     plt.title('Distribution of Squared Errors (F' + str(target_func_no) + ')')
                     plt.ylabel('Squared Error')
                     plt.yscale('log', base=2)
                     plt.grid(True, linestyle='-', alpha=0.7)
-                    # plt.tight_layout()
+                    plt.tight_layout()
                     plt.show()
 
                 print(
