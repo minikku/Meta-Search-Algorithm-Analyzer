@@ -32,6 +32,8 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 
+from msaa.models.custom_random_forest import CustomRandomForestRegressor
+
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -70,15 +72,20 @@ if __name__ == '__main__':
     problem_type = ['BBOB']
 
     # ML MODEL OPTIONS
+    # models = [
+    #     LinearRegression(),
+    #     Ridge(),
+    #     Lasso(),
+    #     ElasticNet(),
+    #     KNeighborsRegressor(),
+    #     DecisionTreeRegressor(),
+    #     RandomForestRegressor(),
+    #     GradientBoostingRegressor(),
+    # ]
+
     models = [
-        LinearRegression(),
-        Ridge(),
-        Lasso(),
-        ElasticNet(),
-        KNeighborsRegressor(),
-        DecisionTreeRegressor(),
         RandomForestRegressor(),
-        GradientBoostingRegressor(),
+        CustomRandomForestRegressor()
     ]
 
     # WINDOW SIZE
