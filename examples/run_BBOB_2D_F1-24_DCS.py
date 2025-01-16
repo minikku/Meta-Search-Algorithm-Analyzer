@@ -1,6 +1,8 @@
+import math
 import os
 import random
 
+from cma.utilities.utils import num2str
 from matplotlib.lines import lineStyles
 
 os.environ["OPENBLAS_NUM_THREADS"] = "6"
@@ -32,7 +34,8 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 
-from msaa.models.custom_random_forest import CustomRandomForestRegressor
+from msaa.models.custom_random_forest_2 import CustomRandomForestRegressor2
+from msaa.models.constant_predictor import ConstantPredictor
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -48,7 +51,7 @@ if __name__ == '__main__':
     ng_algs = ['DCS']
 
     # FUNCTIONS
-    fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ,15, 16, 17, 18, 19, 20, 21 ,22, 23, 24]
+    fids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
 
     # INSTANCES
     iids = [1]  # [1,2,3,4,5,6,7,8,9,10]
@@ -85,7 +88,8 @@ if __name__ == '__main__':
 
     models = [
         RandomForestRegressor(),
-        CustomRandomForestRegressor()
+        CustomRandomForestRegressor2(),
+        ConstantPredictor()
     ]
 
     # WINDOW SIZE
@@ -183,6 +187,25 @@ if __name__ == '__main__':
                     ['algo', 'dim', 'func_id', 'ins_id', 'run_id',
                      'ic.costs_runtime'],
                     axis=1)
+                # df = df.drop(['algo', 'dim', 'func_id', 'ins_id', 'run_id', 'ela_meta.lin_simple.adj_r2',
+                #               'ela_meta.lin_simple.intercept', 'ela_meta.lin_simple.coef.min',
+                #               'ela_meta.lin_simple.coef.max', 'ela_meta.lin_simple.coef.max_by_min',
+                #               'ela_meta.lin_w_interact.adj_r2', 'ela_meta.quad_simple.adj_r2',
+                #               'ela_meta.quad_simple.cond', 'ela_meta.quad_w_interact.adj_r2', 'ela_meta.costs_runtime',
+                #               'ela_distr.skewness', 'ela_distr.kurtosis', 'ela_distr.number_of_peaks',
+                #               'ela_distr.costs_runtime', 'ela_level.mmce_lda_10', 'ela_level.mmce_qda_10',
+                #               'ela_level.mmce_lda_25', 'ela_level.mmce_qda_25', 'ela_level.mmce_lda_50',
+                #               'ela_level.mmce_qda_50', 'ela_level.costs_runtime', 'pca.expl_var.cov_x',
+                #               'pca.expl_var.cor_x', 'pca.expl_var.cov_init', 'pca.expl_var.cor_init',
+                #               'pca.expl_var_PC1.cov_x', 'pca.expl_var_PC1.cor_x', 'pca.expl_var_PC1.cov_init',
+                #               'pca.expl_var_PC1.cor_init', 'pca.costs_runtime', 'limo.avg_length', 'limo.length_mean',
+                #               'limo.length_sd', 'limo.cor', 'limo.sd_ratio_reg', 'limo.sd_mean_reg',
+                #               'limo.costs_runtime', 'nbc.nn_nb.sd_ratio', 'nbc.nn_nb.mean_ratio', 'nbc.nn_nb.cor',
+                #               'nbc.dist_ratio.coeff_var', 'nbc.nb_fitness.cor', 'nbc.costs_runtime',
+                #               'disp.ratio_mean_05', 'disp.ratio_mean_10', 'disp.ratio_mean_25', 'disp.ratio_median_05',
+                #               'disp.ratio_median_10', 'disp.ratio_median_25', 'disp.diff_mean_05', 'disp.diff_mean_10',
+                #               'disp.diff_mean_25', 'disp.diff_median_05', 'disp.diff_median_10', 'disp.diff_median_25',
+                #               'disp.costs_runtime', 'ic.h_max', 'ic.eps_s', 'ic.eps_max', 'ic.m0', 'ic.costs_runtime'], axis=1)
 
                 # Select columns to scale (all except the first one)
                 columns_to_scale = df.columns[1:]
@@ -196,12 +219,28 @@ if __name__ == '__main__':
                 # Concatenate the first column (unchanged) with the scaled DataFrame
                 df_final = pd.concat([df.iloc[:, :1].reset_index(drop=True), df_scaled], axis=1)
 
+                for i in range(len(y)):
+                    if y[i] < 1e-8:
+                        y[i] = 1e-8
+
+                # Set zero values to 1e-8
+                for i in range(len(df_final)):
+                    # Final best column
+                    if df_final.iloc[i, -1] < 1e-8:
+                        df_final.iloc[i, -1] = 1e-8
+
+                    # Best so far column
+                    if df_final.iloc[i, -2] < y[i]:
+                        df_final.iloc[i, -2] = y[i]
+
+                    if df_final.iloc[i, -2] < 1e-8:
+                        df_final.iloc[i, -2] = 1e-8
+
                 X = df_final
 
                 gkf = GroupKFold(n_splits=len(fids))
 
                 # ----------------------- BUILD META-MODEL -----------------------
-
 
                 # Train on different models
                 for i, (train_index, test_index) in enumerate(gkf.split(X, y, groups)):
@@ -210,6 +249,9 @@ if __name__ == '__main__':
 
                     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
                     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+                    selected_input_features = X_train.columns[:-1]
+                    target_feature = X_train.columns[-1]
 
                     # Lists to store predictions and errors
                     predict_vals = []
@@ -230,8 +272,6 @@ if __name__ == '__main__':
 
                         # Declare MetaModel instance
                         meta_model = MetaModel(model, X_train)
-                        selected_input_features = X_train.columns[:-1]
-                        target_feature = X_train.columns[-1]
 
                         # ----------------------- TRAIN META-MODEL -----------------------
                         if force_replace_old_results or not result_exist_flag:
@@ -267,30 +307,33 @@ if __name__ == '__main__':
 
                     # Plotting
                     # plt.figure(figsize=(16, 10))
-                    plt.scatter(range(len(X_test[target_feature])), X_test[target_feature], label='Actual', s=2,
+                    plt.scatter(range(len(y_test.iloc[:])), y_test.iloc[:], label='Actual Final Best', s=2,
                                 marker='*')
                     for m_idx in range(len(predict_vals)):
-                        plt.scatter(range(len(predict_vals[m_idx])), predict_vals[m_idx], label='Predicted (' + models[m_idx].__str__()[:-2] + ')', s=6, marker='o')
-                    plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ')')
-                    plt.ylabel('Final Best Values')
+                        plt.scatter(range(len(predict_vals[m_idx])), predict_vals[m_idx],
+                                    label='Predicted (' + models[m_idx].__str__()[:-2] + ')', s=6, marker='o')
+                    plt.title('Actual ' + num2str(y_test.iloc[0]) + ' vs Predicted Values (F' + str(
+                        target_func_no) + ' with ELA)')
+                    # plt.title('Actual ' + num2str(y_test.iloc[0]) + ' vs Predicted Values (F' + str(target_func_no) + ' without ELA)')
+                    plt.ylabel('Cost Values')
                     plt.xlabel('Iterations')
-                    # plt.yscale('log', base=2)
+                    plt.yscale('log', base=10)
                     plt.grid(True, linestyle=':', alpha=0.5)
                     plt.tight_layout()
                     plt.legend()
                     # plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
                     plt.show()
 
-                    # Plotting
-                    # plt.figure(figsize=(10, 6))
-                    plt.boxplot(func_error_agg_data)
-                    plt.xticks(ticks=np.arange(1, len(model_names) + 1), labels=model_names, rotation=45, ha='right')
-                    plt.title('Distribution of Squared Errors (F' + str(target_func_no) + ')')
-                    plt.ylabel('Squared Error')
-                    plt.yscale('log', base=2)
-                    plt.grid(True, linestyle='-', alpha=0.7)
-                    plt.tight_layout()
-                    plt.show()
+                    # # Plotting
+                    # # plt.figure(figsize=(10, 6))
+                    # plt.boxplot(func_error_agg_data)
+                    # plt.xticks(ticks=np.arange(1, len(model_names) + 1), labels=model_names, rotation=45, ha='right')
+                    # plt.title('Distribution of Squared Errors (F' + str(target_func_no) + ')')
+                    # plt.ylabel('Squared Error')
+                    # plt.yscale('log', base=2)
+                    # plt.grid(True, linestyle='-', alpha=0.7)
+                    # plt.tight_layout()
+                    # plt.show()
 
                 print(
                     show_current_date_time() + ' ' + 'COMPLETED 4/4: Models were trained and tested (' + algo + '_' + str(
