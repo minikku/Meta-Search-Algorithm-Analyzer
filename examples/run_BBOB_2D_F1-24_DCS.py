@@ -290,19 +290,6 @@ if __name__ == '__main__':
                         squared_errors = (X_test[target_feature] - y_pred) ** 2
                         func_error_agg_data.append(squared_errors)
 
-                        # # Plotting
-                        # plt.figure(figsize=(10, 6))
-                        # plt.scatter(range(len(X_test[target_feature])), X_test[target_feature], label='Actual', s=2)
-                        # plt.scatter(range(len(y_pred)), y_pred, label='Predicted', s=2)
-                        # plt.title('Actual vs Predicted Values (F' + str(target_func_no) + ' : ' + model.__str__() + ')')
-                        # plt.ylabel('Final Best Values')
-                        # plt.xlabel('Iterations')
-                        # # plt.yscale('log', base=2)
-                        # plt.grid(True, linestyle='--', alpha=0.7)
-                        # # plt.tight_layout()
-                        # plt.legend()
-                        # plt.show()
-
                         model_idx = model_idx + 1
 
                     # Plotting
