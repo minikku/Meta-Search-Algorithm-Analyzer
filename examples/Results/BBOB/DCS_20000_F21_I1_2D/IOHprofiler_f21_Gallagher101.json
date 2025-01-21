@@ -1,0 +1,16 @@
+{
+	"version": "0.3.18", 
+	"suite": "unknown_suite", 
+	"function_id": 21, 
+	"function_name": "Gallagher101", 
+	"maximization": false, 
+	"algorithm": {"name": "DCS_20000", "info": "algorithm_info"},
+	"attributes": ["evaluations", "raw_y"],
+	"scenarios": [
+		{"dimension": 2,
+		"path": "data_f21_Gallagher101/IOHprofiler_f21_DIM2.dat",
+		"runs": [
+			{"instance": 1, "evals": 20000, "best": {"evals": 6668, "y": 2.7828672894918567e-15, "x": [-2.51460774257517, -1.7872747727518783]}}
+		]}
+	]
+}

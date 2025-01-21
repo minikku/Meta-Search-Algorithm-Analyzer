@@ -1,0 +1,16 @@
+{
+	"version": "0.3.18", 
+	"suite": "unknown_suite", 
+	"function_id": 17, 
+	"function_name": "Schaffers10", 
+	"maximization": false, 
+	"algorithm": {"name": "DCS_20000", "info": "algorithm_info"},
+	"attributes": ["evaluations", "raw_y"],
+	"scenarios": [
+		{"dimension": 2,
+		"path": "data_f17_Schaffers10/IOHprofiler_f17_DIM2.dat",
+		"runs": [
+			{"instance": 1, "evals": 20000, "best": {"evals": 18395, "y": 1.7007178267181607e-15, "x": [3.6559999999999993, 2.5495999999999994]}}
+		]}
+	]
+}
